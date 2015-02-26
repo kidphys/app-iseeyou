@@ -3,24 +3,7 @@ s3 = require('./s3.js')
 d3 = require('d3')
 moment = require('moment')
 
-play_data = (data, chart) ->
-    index = 1
-    id = setInterval(() ->
-        index += 1
-        chart(process.to_stacked_bar_data(data.slice(0, index)))
-        if index >= data.length
-          clearInterval(id)
-    , 200)
 
-    return id
-
-load_binary_data = (url, callback) ->
-    xhr = d3.xhr(url)
-    xhr.responseType('arraybuffer')
-    xhr.response((response) ->
-        callback(response.response)
-        )
-    xhr.get()
 
 angular.module('market-playback', ['ui.bootstrap'])
 angular.module('market-playback')
@@ -56,24 +39,57 @@ angular.module('market-playback')
                     'TLH', 'VGS', 'HPG', 'VIS', 'HLA',
                     'ITA', 'NTL', 'LCG', 'ITC', 'HQC', 'IJC', 'KBC', 'DXG',
                     'VCB', 'MBB', 'CTG', 'ACB', 'EIB', 'BID', 'SHB',
-                    'BGM', 'KSS', 'KSH', 'KTB', 'KHB', 'KSD', 'DHM', 'LCM', 'BMC']
+                    'BGM', 'KSS', 'KSH', 'KTB', 'KHB', 'KSD', 'DHM', 'LCM', 'BMC', 'VIX']
 
   url = 'http://54.148.105.53:8080/pack/transactions?'
   stacked_chart = s3.StackedChart(d3.select('#chart'))
   curr_id = 0
 
+  $scope.alert_msg = ''
+  alert = (message) ->
+    $scope.$apply(() -> $scope.alert_msg = message)
+
+  play_data = (data, chart) ->
+      index = 1
+      id = setInterval(() ->
+          index += 1
+          chart(process.to_stacked_bar_data(data.slice(0, index)))
+          if index >= data.length
+            clearInterval(id)
+            last_time = data[data.length - 1].time
+            date = moment($scope.dt).format('DD/MM/YYYY')
+            alert('Play finished, last transaction time: ' + last_time + ' in: ' + date)
+      , 200)
+
+      return id
+
+  load_binary_data = (url, callback, err) ->
+      xhr = d3.xhr(url)
+      xhr.responseType('arraybuffer')
+      xhr.response((response) ->
+          callback(response.response)
+          )
+
+      date = moment($scope.dt).format('DD/MM/YYYY')
+      xhr.on('error', () -> alert('There is no data for ' + $scope.symbol + ' in: ' + date))
+      xhr.get()
+
   $scope.select_symbol = (symbol) ->
+    # set msg directly here since using $apply will result in
+    # error: apply already in process
+    $scope.alert_msg = 'Loading data for ' + symbol + '...'
     date = moment($scope.dt).format('DD/MM/YYYY')
-    console.log('Symbol selected', symbol, date)
     $scope.symbol = symbol
+    clearInterval(curr_id)
     load_binary_data(url + 'symbol=' + symbol + '&date=' + encodeURIComponent(date) + '&rand=' + Math.random(), (data) ->
-          clearInterval(curr_id)
+          alert('Chart loaded for ' + symbol + ' in: ' + date)
           data = process.decode(data)
           data = process.un_rotate(data)
-          curr_id = play_data(data, stacked_chart)
+          # unfortunately, data return from server is reverse
+          curr_id = play_data(data.reverse(), stacked_chart)
       )
 
-
+  $scope.select_symbol($scope.symbol)
 )
 
 

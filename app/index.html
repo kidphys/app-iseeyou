@@ -11,14 +11,27 @@
 </head>
 <body>
     <div ng-controller="DatePicker">
-        <pre>Chart for {{symbol}} in: <em>{{dt | date:'fullDate' }}</em></pre>
-
-        <div class="row btn-group">
-            <button ng-repeat="symbol in symbols" type="button" class="btn btn-default navbar-btn" ng-click="select_symbol(symbol)">{{symbol}}</button>
+        <div class="row">
+            <div class="col-md-6">
+                <span>GUIDE</span>
+                <p>Choose date, then symbol. Chart will be loaded immediately after symbol is chosen</p>
+                <p style="color: blue">This color is for 1st transaction of the day</p>
+                <p style="color: red">This color is for sell transaction (price lower than previous)</p>
+                <p style="color: green">This color is for buy transaction (price higher than previous</p>
+                <p>If price doesn't change, then next transaction has the same color with previous transaction</p>
+                <p>Sometimes transaction is too small, you can't see them</p>
+            </div>
+            <div class="col-md-3" style="display:inline-block; min-height:290px;">
+                <datepicker ng-model="dt" min-date="minDate" show-weeks="true" class="well well-sm"></datepicker>
+            </div>
         </div>
-
-        <div class="col-md-3" style="display:inline-block; min-height:290px;">
-            <datepicker ng-model="dt" min-date="minDate" show-weeks="true" class="well well-sm"></datepicker>
+        <div class="row">
+            <div class="btn-group">
+                <button ng-repeat="symbol in symbols" type="button" class="btn btn-default navbar-btn" ng-click="select_symbol(symbol)">{{symbol}}</button>
+            </div>
+        </div>
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            {{alert_msg}}
         </div>
         <div id="chart"></div>
     </div>

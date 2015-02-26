@@ -19,7 +19,7 @@ to_stacked_bar_data = (data) ->
 
     get_color = (last, next) ->
         if last is null
-            return 'yellow'
+            return 'blue'
         if next > last
             return 'green'
         else if next < last
