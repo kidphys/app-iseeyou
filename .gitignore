@@ -1,1 +1,3 @@
-_site/*.*
+_site/
+app/_site
+coffee/node_modules
