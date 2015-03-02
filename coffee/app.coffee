@@ -8,7 +8,7 @@ moment = require('moment')
 angular.module('market-playback', ['ui.bootstrap'])
 angular.module('market-playback')
 .controller('DatePicker', ($scope) ->
-  $scope.today = () -> $scope.dt = new Date()
+ $scope.today = () -> $scope.dt = new Date()
   $scope.today()
 
   $scope.clear = () -> $scope.dt = null
@@ -56,9 +56,10 @@ angular.module('market-playback')
           chart(process.to_stacked_bar_data(data.slice(0, index)))
           if index >= data.length
             clearInterval(id)
-            last_time = data[data.length - 1].time
+            last = data[data.length - 1]
+            last_time = last.time
             date = moment($scope.dt).format('DD/MM/YYYY')
-            alert('Play finished, last transaction time: ' + last_time + ' in: ' + date)
+            alert('Play finished, last transaction at price: ' + last.price + ' time: ' + last_time + ' in: ' + date)
       , 200)
 
       return id
