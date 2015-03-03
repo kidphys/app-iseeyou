@@ -5,7 +5,9 @@
     <title>Market Transaction Playback</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
     <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.1.js"></script>
+    <script src="js/autocomplete.js"></script>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/autocomplete.css" rel="stylesheet">
     <script src="js/bundle.js"></script>
     <link href="css/style.css" rel="stylesheet">
 </head>
@@ -20,14 +22,10 @@
                 <p style="color: green">This color is for buy transaction (price higher than previous</p>
                 <p>If price doesn't change, then next transaction has the same color with previous transaction</p>
                 <p>Sometimes transaction is too small, you can't see them</p>
+                <autocomplete ng-model="chosenSymbol" data="symbols" on-select="symbolSelected"></autocomplete>
             </div>
             <div class="col-md-3" style="display:inline-block; min-height:290px;">
                 <datepicker ng-model="dt" min-date="minDate" show-weeks="true" class="well well-sm"></datepicker>
-            </div>
-        </div>
-        <div class="row">
-            <div class="btn-group">
-                <button ng-repeat="symbol in symbols" type="button" class="btn btn-default navbar-btn" ng-click="select_symbol(symbol)">{{symbol}}</button>
             </div>
         </div>
         <div class="alert alert-warning alert-dismissible" role="alert">
